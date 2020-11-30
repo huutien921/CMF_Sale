@@ -29,12 +29,34 @@ public class ProductRestController {
 	private ProductService productService;
 	@Autowired
 	private ProductTypeService productTypeService;
-	@RequestMapping(value = "/products", produces = MimeTypeUtils.APPLICATION_JSON_VALUE )
+	@RequestMapping(value = "/product/findAll", produces = MimeTypeUtils.APPLICATION_JSON_VALUE )
 	public @ResponseBody String findAll(){
 		List<Product> products = (List<Product>) productService.findAll();
+		List<ProductResponse> responses = new ArrayList<>();
+		responses = products.stream().map(product -> new ProductResponse().setProductResponse(product))
+				.collect(Collectors.toList());
+		CMFResponse<List<ProductResponse>> cmfResponse =  new CMFResponse<>();
+		cmfResponse.setObject(responses);
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-		String json = gson.toJson(products);
+		String json = gson.toJson(cmfResponse);
 		return json;
+	}
+	@RequestMapping(value = "/product", produces = MimeTypeUtils.APPLICATION_JSON_VALUE )
+	public @ResponseBody String findByPage(@PathVariable("page") int page , @PathVariable("limit") int limit){
+		List<Product> products = (List<Product>) productService.findAll();
+		List<ProductResponse> responses = new ArrayList<>();
+		responses = products.stream().map(product -> new ProductResponse().setProductResponse(product))
+				.collect(Collectors.toList());
+		CMFResponse<List<ProductResponse>> cmfResponse =  new CMFResponse<>();
+		cmfResponse.setObject(responses);
+		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+		String json = gson.toJson(cmfResponse);
+		return json;
+	}
+	@RequestMapping(value = "/product/test", produces = MimeTypeUtils.APPLICATION_JSON_VALUE )
+	public @ResponseBody String findBytest(){
+		
+		return "jenkins";
 	}
 	@RequestMapping(value = "/product/{id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE )
 	public @ResponseBody String findById(@PathVariable("id")int id){

@@ -8,5 +8,5 @@ import com.cmf.sale.entities.ProductType;
 @Repository("productTypeRepository")
 public interface ProductTypeRepository extends CrudRepository<ProductType, Integer> {
 	
-
+	
 }
