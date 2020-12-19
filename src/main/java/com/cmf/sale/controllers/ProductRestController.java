@@ -10,14 +10,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cmf.sale.entities.Product;
 import com.cmf.sale.entities.ProductType;
-import com.cmf.sale.model.views.CMFResponse;
-import com.cmf.sale.model.views.ProductResponse;
+import com.cmf.sale.model.api.CMFApiProductRequest;
+import com.cmf.sale.model.api.CMFPageRequest;
+import com.cmf.sale.model.api.CMFResponse;
+import com.cmf.sale.model.api.ProductResponse;
 import com.cmf.sale.services.ProductService;
 import com.cmf.sale.services.ProductTypeService;
 import com.google.gson.Gson;
@@ -37,12 +41,13 @@ public class ProductRestController {
 				.collect(Collectors.toList());
 		CMFResponse<List<ProductResponse>> cmfResponse =  new CMFResponse<>();
 		cmfResponse.setObject(responses);
+		cmfResponse.setTotalRecord(responses.size());
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		String json = gson.toJson(cmfResponse);
 		return json;
 	}
-	@RequestMapping(value = "/product", produces = MimeTypeUtils.APPLICATION_JSON_VALUE )
-	public @ResponseBody String findByPage(@PathVariable("page") int page , @PathVariable("limit") int limit){
+	@RequestMapping(value = "/product", produces = MimeTypeUtils.APPLICATION_JSON_VALUE , method = RequestMethod.POST )
+	public @ResponseBody String findByPage(@RequestBody CMFPageRequest pageRequest){
 		List<Product> products = (List<Product>) productService.findAll();
 		List<ProductResponse> responses = new ArrayList<>();
 		responses = products.stream().map(product -> new ProductResponse().setProductResponse(product))
@@ -82,4 +87,7 @@ public class ProductRestController {
 		String json = gson.toJson(cmfResponse);
 		return json;
 	}
+	
+	
+	
 }
