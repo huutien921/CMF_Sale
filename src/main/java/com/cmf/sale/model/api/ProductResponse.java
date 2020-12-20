@@ -7,6 +7,7 @@ import javax.persistence.MapKey;
 import javax.persistence.MapKeyColumn;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 
 import com.cmf.sale.entities.InvoiceDetail;
 import com.cmf.sale.entities.Product;
@@ -32,6 +33,12 @@ public class ProductResponse {
 	private List<InvoiceDetail> invoiceDetails = new ArrayList<InvoiceDetail>();
 	public ProductResponse  setProductResponse(Product product) {
 		ModelMapper mapper = new ModelMapper();
+		  PropertyMap<Product, ProductResponse> personMap = new PropertyMap <Product, ProductResponse>() {
+		      protected void configure() {
+		          map().setTypeName(source.getProductType().getName());
+		      }
+		  };
+		  mapper.addMappings(personMap);
 		return mapper.map(product, ProductResponse.class);
 	}
 	

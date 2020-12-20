@@ -3,11 +3,11 @@ package com.cmf.sale.controllers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cmf.sale.entities.Product;
-import com.cmf.sale.entities.ProductType;
-import com.cmf.sale.model.api.CMFApiProductRequest;
 import com.cmf.sale.model.api.CMFPageRequest;
 import com.cmf.sale.model.api.CMFResponse;
 import com.cmf.sale.model.api.ProductResponse;
@@ -33,9 +31,24 @@ public class ProductRestController {
 	private ProductService productService;
 	@Autowired
 	private ProductTypeService productTypeService;
+	
+	@Autowired
+	private RedisTemplate template;
+	
+	public static final String FIND_ALL = "FIND_ALL";
+	public static final long  DEFAULT_REDIS_EXPIRE = 600000;
 	@RequestMapping(value = "/product/findAll", produces = MimeTypeUtils.APPLICATION_JSON_VALUE )
 	public @ResponseBody String findAll(){
-		List<Product> products = (List<Product>) productService.findAll();
+		List<Product> products;
+		products =  (List<Product>) template.opsForValue().get(FIND_ALL.toString());
+		if (products == null) {
+			products = (List<Product>) productService.findAll();
+			template.opsForValue().set(FIND_ALL.toString() ,products,DEFAULT_REDIS_EXPIRE , TimeUnit.SECONDS);
+			
+		}
+		
+		
+		
 		List<ProductResponse> responses = new ArrayList<>();
 		responses = products.stream().map(product -> new ProductResponse().setProductResponse(product))
 				.collect(Collectors.toList());
