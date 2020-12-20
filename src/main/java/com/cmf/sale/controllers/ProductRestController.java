@@ -74,7 +74,7 @@ public class ProductRestController {
 	@RequestMapping(value = "/product/test", produces = MimeTypeUtils.APPLICATION_JSON_VALUE )
 	public @ResponseBody String findBytest(){
 		
-		return "jenkins3";
+		return "jenkins4";
 	}
 	@RequestMapping(value = "/product/{id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE )
 	public @ResponseBody String findById(@PathVariable("id")int id){
