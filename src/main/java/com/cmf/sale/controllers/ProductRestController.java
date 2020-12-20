@@ -66,7 +66,7 @@ public class ProductRestController {
 	}
 	@RequestMapping(value = "/product/test", produces = MimeTypeUtils.APPLICATION_JSON_VALUE )
 	public @ResponseBody String findBytest(){
-		template.opsForValue().set(FIND_ALL.toString() ,null, 0, TimeUnit.SECONDS);
+		template.delete(FIND_ALL);
 		return "jenkins5";
 	}
 	@RequestMapping(value = "/product/{id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE )
