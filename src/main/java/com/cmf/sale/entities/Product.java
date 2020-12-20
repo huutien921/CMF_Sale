@@ -21,12 +21,19 @@ import com.google.gson.annotations.Expose;
 @Entity
 @Table(name = "product")
 public class Product implements java.io.Serializable {
+	@Expose
 	private Integer id;
+	@Expose
 	private ProductType productType;
+	@Expose
 	private String name;
+	@Expose
 	private String image;
+	@Expose
 	private String description;
+	@Expose
 	private Integer amount;
+	@Expose
 	private Integer status;
 	private Set<InvoiceDetail> invoiceDetails = new HashSet<InvoiceDetail>(0);
 
