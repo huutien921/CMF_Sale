@@ -47,16 +47,9 @@ public class ProductRestController {
 			
 		}
 		
-		
-		
-		List<ProductResponse> responses = new ArrayList<>();
-		responses = products.stream().map(product -> new ProductResponse().setProductResponse(product))
-				.collect(Collectors.toList());
-		CMFResponse<List<ProductResponse>> cmfResponse =  new CMFResponse<>();
-		cmfResponse.setObject(responses);
-		cmfResponse.setTotalRecord(responses.size());
+
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-		String json = gson.toJson(cmfResponse);
+		String json = gson.toJson(products);
 		return json;
 	}
 	@RequestMapping(value = "/product", produces = MimeTypeUtils.APPLICATION_JSON_VALUE , method = RequestMethod.POST )
