@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cmf.sale.entities.Product;
+import com.cmf.sale.kafka.CFMKafkaService;
 import com.cmf.sale.model.api.CMFPageRequest;
 import com.cmf.sale.model.api.CMFResponse;
 import com.cmf.sale.model.api.ProductResponse;
@@ -29,11 +31,15 @@ import com.google.gson.GsonBuilder;
 public class ProductRestController {
 	@Autowired
 	private ProductService productService;
+	
 	@Autowired
 	private ProductTypeService productTypeService;
 	
 	@Autowired
 	private RedisTemplate template;
+
+	@Autowired
+	private CFMKafkaService kafkaService ;
 	
 	public static final String FIND_ALL = "FIND_ALL";
 	public static final long  DEFAULT_REDIS_EXPIRE = 600000;
@@ -44,12 +50,27 @@ public class ProductRestController {
 		if (products == null) {
 			products = (List<Product>) productService.findAll();
 			template.opsForValue().set(FIND_ALL.toString() ,products,DEFAULT_REDIS_EXPIRE , TimeUnit.SECONDS);
-			
 		}
-		
-
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		String json = gson.toJson(products);
+		return json;
+	}
+	@RequestMapping(value = "/product/kafka", produces = MimeTypeUtils.APPLICATION_JSON_VALUE )
+	public @ResponseBody String sendKafka(){
+		List<Product> products;
+		products =  (List<Product>) template.opsForValue().get(FIND_ALL.toString());
+		if (products == null) {
+			products = (List<Product>) productService.findAll();
+			template.opsForValue().set(FIND_ALL.toString() ,products,DEFAULT_REDIS_EXPIRE , TimeUnit.SECONDS);
+		}
+		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+		String json = gson.toJson(products);
+		try {
+			kafkaService.sendMessage("KAFKA :" + json);
+		} catch (Exception e) {
+			System.out.println("log  : " + e);
+		}
+	
 		return json;
 	}
 	@RequestMapping(value = "/product", produces = MimeTypeUtils.APPLICATION_JSON_VALUE , method = RequestMethod.POST )
