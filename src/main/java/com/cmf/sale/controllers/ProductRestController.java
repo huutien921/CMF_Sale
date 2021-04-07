@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cmf.sale.entities.Product;
+import com.cmf.sale.entities.ProductType;
 import com.cmf.sale.kafka.CFMKafkaService;
 import com.cmf.sale.model.api.CMFPageRequest;
 import com.cmf.sale.model.api.CMFResponse;
@@ -35,34 +36,35 @@ public class ProductRestController {
 	@Autowired
 	private ProductTypeService productTypeService;
 	
-	@Autowired
-	private RedisTemplate template;
+//	@Autowired
+//	private RedisTemplate template;
 
 	@Autowired
 	private CFMKafkaService kafkaService ;
 	
 	public static final String FIND_ALL = "FIND_ALL";
 	public static final long  DEFAULT_REDIS_EXPIRE = 600000;
-	@RequestMapping(value = "/product/findAll", produces = MimeTypeUtils.APPLICATION_JSON_VALUE )
-	public @ResponseBody String findAll(){
-		List<Product> products;
-		products =  (List<Product>) template.opsForValue().get(FIND_ALL.toString());
-		if (products == null) {
-			products = (List<Product>) productService.findAll();
-			template.opsForValue().set(FIND_ALL.toString() ,products,DEFAULT_REDIS_EXPIRE , TimeUnit.SECONDS);
-		}
-		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-		String json = gson.toJson(products);
-		return json;
-	}
+//	@RequestMapping(value = "/product/findAll", produces = MimeTypeUtils.APPLICATION_JSON_VALUE )
+//	public @ResponseBody String findAll(){
+//		List<Product> products;
+//		products =  (List<Product>) template.opsForValue().get(FIND_ALL.toString());
+//		if (products == null) {
+//			products = (List<Product>) productService.findAll();
+//			template.opsForValue().set(FIND_ALL.toString() ,products,DEFAULT_REDIS_EXPIRE , TimeUnit.SECONDS);
+//		}
+//		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+//		String json = gson.toJson(products);
+//		return json;
+//	}
 	@RequestMapping(value = "/product/kafka", produces = MimeTypeUtils.APPLICATION_JSON_VALUE )
 	public @ResponseBody String sendKafka(){
-		List<Product> products;
-		products =  (List<Product>) template.opsForValue().get(FIND_ALL.toString());
-		if (products == null) {
-			products = (List<Product>) productService.findAll();
-			template.opsForValue().set(FIND_ALL.toString() ,products,DEFAULT_REDIS_EXPIRE , TimeUnit.SECONDS);
-		}
+		List<Product> products = new  ArrayList<Product>();
+		products.add(new Product());
+//		products =  (List<Product>) template.opsForValue().get(FIND_ALL.toString());
+//		if (products == null) {
+//			products = (List<Product>) productService.findAll();
+//			template.opsForValue().set(FIND_ALL.toString() ,products,DEFAULT_REDIS_EXPIRE , TimeUnit.SECONDS);
+//		}
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		String json = gson.toJson(products);
 		try {
@@ -87,7 +89,7 @@ public class ProductRestController {
 	}
 	@RequestMapping(value = "/product/test", produces = MimeTypeUtils.APPLICATION_JSON_VALUE )
 	public @ResponseBody String findBytest(){
-		template.delete(FIND_ALL);
+	//	template.delete(FIND_ALL);
 		return "jenkins5";
 	}
 	@RequestMapping(value = "/product/{id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE )

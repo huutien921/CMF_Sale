@@ -18,8 +18,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.annotations.Expose;
 
 
-@Entity
-@Table(name = "product")
+//@Entity
+//@Table(name = "product")
 public class Product implements java.io.Serializable {
 	@Expose
 	private Integer id;

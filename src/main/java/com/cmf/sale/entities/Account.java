@@ -5,8 +5,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 
-@Entity
-@Table(name = "account")
+//@Entity
+//@Table(name = "account")
 public class Account implements java.io.Serializable {
 
 	private int id;
